@@ -1,0 +1,365 @@
+# deutsche Tastatur
+  loadkeys de-latin1-nodeadkeys
+
+# Festplatten anzeigen
+# fdisk -l
+  lsblk
+# ls -l /dev/disk/by-label
+# df -Th
+
+# Festplatte partionieren
+  cfdisk /dev/sda 
+# label type: dos
+# 1) 2GB 	Bootable			83 Linux
+# 2) 6GB 	(1,5xRAM)			82 Linux swap
+# 3) 15G 	(root= programme)		83 Linux
+# 4) Rest 	Dateien				83 Linux
+# Write
+
+# Partition löschen 
+  sudo dd if=/dev/zero of=/dev/sdc bs=1MB conv=noerror status=progress && sync 
+
+# Live Install image - USB  
+  sudo dd bs=4M if=/home/thorsten/Downloads/antergos-18.8-x86_64.iso of=/dev/sdc status=progress && sync 
+
+# Dateisystem anlegen
+  mkfs.ext4 -L BOOT /dev/sdc1 &&
+  mkswap -L SWAP /dev/sdc2  &&
+  swapon /dev/sdc2 &&
+  mkfs.ext4 -L SYSTEM /dev/sdc3 &&
+  mkfs.ext4 -L DATEN /dev/sdc4
+# Partionen einhängen 
+  mount /dev/sdc3 /mnt &&
+  mkdir /mnt/boot /mnt/home &&
+  mount /dev/sdc1 /mnt/boot &&
+  mount /dev/sdc4 /mnt/home
+
+# Ping zur Prüfung der Internet Verbindung 
+  ping -c1 www.google.com
+	# ggf Netwerkverbindung herstellen
+	# systemctl enable dhcpcd.service
+
+# Arch Keyring aktualisieren wenn Installation mit Antergos 
+  pacman -S --noconfirm --needed archlinux-keyring
+
+# Zeit 
+  timedatectl set-ntp true
+
+# Systeminstallation
+  pacstrap /mnt base base-devel bash-completion ntp reflector net-tools git
+
+# Partitionstabelle mit Label erstellen 
+  genfstab -Lp /mnt >> /mnt/etc/fstab 
+# Partitionstabelle mit UUID erstellen
+# genfstab -U /mnt >> /mnt/etc/fstab 
+
+# in Installation wechseln als Root
+  arch-chroot /mnt /bin/bash
+
+# Bootloader installieren
+  pacman -S grub os-prober intel-ucode --noconfirm
+  grub-install --target=i386-pc /dev/sdc
+  grub-mkconfig -o /boot/grub/grub.cfg
+
+# custom initramfs
+  nano /etc/mkinitcpio.conf
+	HOOKS=(base udev keyboard keymap consolefont autodetect modconf block filesystems fsck shutdown)
+	# keyboard: place this hook before autodetect in order to always include all keyboard drivers
+  mkinitcpio -p linux
+  grub-mkconfig -o /boot/grub/grub.cfg
+
+# locale Einstellungen 
+  rm -rf /etc/localtime &&
+  ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+  nano /etc/locale.gen		# de_DE.UTF-8 und en_DK.UTF-8
+  locale-gen
+  # mit locale die Einstellungen anzeigen
+  echo LANG=de_DE.UTF-8 > /etc/locale.conf &&
+  echo LANGUAGE=de_DE:en_US >> /etc/locale.conf &&
+  export LANG=de_DE.UTF-8 &&
+  export LANGUAGE=de_DE:en_US
+ 
+  echo KEYMAP=de-latin1-nodeadkeys > /etc/vconsole.conf &&
+  echo FONT=eurlatgr >> /etc/vconsole.conf
+  # echo FONT=Inconsolata >> /etc/vconsole.conf 
+# Zeit + Datum 
+  systemctl enable systemd-timesyncd.service &&
+  ntpd -gq
+  hwclock --systohc #--utc
+  # date 
+  # hwclock -w --localtime
+  echo ThorArch > etc/hostname
+  passwd root
+  useradd -m -g users -G wheel -s /bin/bash thorsten
+  passwd thorsten
+  EDITOR=nano visudo  # vor %wheel entfernen
+
+# exit
+# umount -R /mnt
+# reboot
+# login  mit thorsten
+
+  sudo pacman -S git --noconfirm
+  git clone https://github.com/thor2301/archxfce4.git
+
+# host konigurieren
+  nano /etc/hosts
+	## Static table lookup for hostnames.
+	## See hosts(5) for details.
+
+#<ip-address>   <hostname.domain.org>   <hostname>
+127.0.0.1       localhost.localdomain   localhost
+::1             localhost.localdomain   localhost
+127.0.0.1       ThorArch.localdomain   ThorArch
+
+# The following lines are desirable for IPv6 capable hosts
+::1             localhost ip6-localhost ip6-loopback
+ff02::1         ip6-allnodes
+ff02::2         ip6-allrouters
+
+ 
+# Bluetooth
+  pacman -S --noconfirm --needed blueman bluez bluez-libs bluez-utils bluez-firmware pulseaudio-bluetooth
+  systemctl enable bluetooth.service 
+  sudo sed -i 's/'#AutoEnable=false'/'AutoEnable=true'/g' /etc/bluetooth/main.conf
+  
+  # Policy Kit -->  Datei "60-blueman.rules" im Ordner etc/polkit-1/rules.d/ erstellen
+    /* Allow users in wheel group to use blueman feature requiring root without authentication */
+    polkit.addRule(function(action, subject) {
+    if ((action.id == "org.blueman.network.setup" ||
+         action.id == "org.blueman.dhcp.client" ||
+         action.id == "org.blueman.rfkill.setstate" ||
+         action.id == "org.blueman.pppd.pppconnect") &&
+        subject.isInGroup("wheel")) {
+        return polkit.Result.YES;
+      }
+    });
+
+  # Bluetooth bei booten --> Datei "50-bluetooth-hci-auto-poweron.rules" im Ordner /etc/udev/rules.d/ erstellen 
+    CTION=="add", SUBSYSTEM=="bluetooth", KERNEL=="hci[0-9]*", RUN+="/bin/hciconfig %k up"
+
+# Netzwerkmanager
+  pacman -S --noconfirm --needed networkmanager network-manager-applet nm-connection-editor
+  systemctl enable NetworkManager
+
+# Repositorien festlegen
+  nano /etc/pacman.conf
+
+	[multilib]
+	Include = /etc/pacman.d/mirrorlist
+
+	[arcolinux_repo]
+	SigLevel = Required DatabaseOptional
+  Server = https://arcolinux.github.io/arcolinux_repo/$arch
+
+  [arcolinux_repo_iso]
+	SigLevel = Never
+	Server = https://arcolinux.github.io/arcolinux_repo_iso/$arch
+
+	# [archlinuxfr]
+	# SigLevel = Never
+	# Server = http://repo.archlinux.fr/$arch
+
+# Trust Key für Arco
+  pacman-key --keyserver hkps://hkps.pool.sks-keyservers.net:443 -r 74F5DE85A506BF64
+  pacman-key --lsign-key 74F5DE85A506BF64
+
+# AUR Helfer
+  pacman -Syu --noconfirm --needed trizen yaourt package-query
+
+# Dienste installieren und aktivieren
+  pacman -S --noconfirm --needed acpid dbus avahi cups cronie
+  systemctl enable acpid.service cronie.service avahi-daemon dbus.service org.cups.cupsd.service
+
+# Kernel- LTS oder normal, linux headers & dkms
+  # pacman -S inux-lts linux-lts-headers dkms
+  
+
+# Grafische Oberfläche
+  # lspci | grep -e VGA -e 3D
+  pacman -S --noconfirm --needed xorg-server xorg-xinit xf86-input-synaptics xorg-xrandr
+  # localectl set-x11-keymap de pc105 nodeadkeys
+  nano /etc/X11/xorg.conf.d/20-keyboard.conf
+  Section "InputClass"
+        Identifier "keyboard"
+        MatchIsKeyboard "yes"
+        Option "XkbLayout" "de"
+        Option "XkbVariant" "nodeadkeys"
+  EndSecti
+
+# Grafikkarte Nvidia Optimus  mit lts kernel
+  pacman -S --noconfirm --needed bumblebee mesa xf86-video-intel nvidia-390xx nvidia-390xx-utils lib32-nvidia-390xx-utils lib32-virtualgl bbswitch lib32-mesa-libgl mesa-libgl
+  # User zu bumblebee und video Gruppe hinzufügen
+  gpasswd -a thorsten bumblebee 
+  gpasswd -a thorsten video
+  systemctl enable bumblebeed.service 
+ 
+# alle Kerne aktivieren
+  # https://github.com/arcolinuxd/arco-xfce/blob/master/000-use-all-cores-makepkg-conf-v2.sh
+  # Anzahl der Kerne
+  numberofcores=$(grep -c ^processor /proc/cpuinfo)
+  sed -i 's/#MAKEFLAGS="-j2"/MAKEFLAGS="-j5"/g' /etc/makepkg.conf
+  sed -i 's/COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -T 4 -z -)/g' /etc/makepkg.conf
+
+# fehlende Treiber ergänzen
+  trizen -S wd719x-firmware aic94xx-firmware
+  mkinitcpio -p linux
+  grub-mkconfig -o /boot/grub/grub.cfg
+
+# Schriftarten
+  
+  trizen -S ttf-ms-fonts
+
+# Desktopumgebung und Display Manager
+# XFCE-4 
+  pacman -S xfce4 xfce4-goodies xfce4-notifyd lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings gtk-engine-murrine
+  # 3,4,5,7-13,15,16,18-31,33,34,36,37
+  systemctl enable lightdm.service
+  systemctl set-default graphical.target
+  # pacman -R xfce4-artwork mousepad orage xfce4-eyes-plugin xfce4-wavelan-plugin --noconfirm
+
+
+# KDE
+# echo "exec startkde" > ~/.xinitrc
+# pacman -S plasma-meta kde-l10n-de sddm sddm-kcm breeze-kde4 breeze-gtk kde-gtk-config
+# systemctl enable sddm.service
+
+# WEB- Downloads
+  pacman -S --noconfirm --needed git wget
+	# git clone https://github.com/arcolinuxd/arco-xfce
+	# git clone https://github.com/erikdubois/arcolinux-nemesis.git
+
+	# https://wiki.archlinux.org/index.php/xfce
+	# https://arcolinuxd.com/9-installation-of-xfce-on-arch-linux-phase-
+	# https://antergos.com/wiki/hardware/graphics/bumblebee-for-nvidia-optimus/
+
+# Sublime & yad
+  trizen -S sublime-text-dev yad
+
+----- BEGIN LICENSE -----
+Thorsten
+Single User License
+EA7E-1083452
+8875445F AD631500 374674E1 488390C2
+1A0020DE C3F0E999 BC6E90FB C131221A
+491093C7 600EC602 BD9C0F50 8EF3E743
+605FAF2B 1C34D2A0 565C1CE5 BA9BFB21
+383829EE 1968A559 61FFF144 3FA40C92
+A40DD629 445F840B 2079C925 6EC92AEF
+9D4675F9 D25E6FB3 F732EAAC 75A19633
+47F0456B 5A22594D 911AABB0 91A7925D
+------ END LICENSE ------
+
+# Audio/Video installieren
+  pacman -S --noconfirm --needed alsa-tools alsa-utils alsa-plugins alsa-lib alsa-firmware pulseaudio-alsa pavucontrol gstreamer gst-plugins-good gst-plugins-bad gst-plugins-base gst-plugins-ugly gst-libav ffmpegthumbnailer volumeicon playerctl vlc audacity mp3splt-gtk
+
+# themes und icons
+  trizen -S arc-icon-theme moka-icon-theme faba-icon-theme arc-gtk-theme adwaita-icon-theme adwaita-xfce-theme-git adwaita-dark numix-gtk-theme-git numix-icon-theme-pack-git sardi-icons xdg-user-dirs hardcode-fixer-git 
+  # sudo hardcode-fixer
+
+# Dateimanager 
+  pacman -S baobab
+# thunar
+  pacman -S thunar tumbler thunar-archive-plugin thunar-volman
+# thunar- als root
+  pacman -S gksu
+	# Bearbeiten- Benutzerdefinierte Aktion
+	# Name: als root...
+	# Befehl: gksu thunar %f
+# thunar- Dateisuche
+  pacman -S catfish
+# thunar- Android
+  pacman -S gvfs gvfs-mtp
+
+# Dateimanager nemo
+  pacman -S nemo nemo-fileroller nemo-image-converter nemo-preview nemo-python
+  trizen -S --noconfirm --needed nemo-audio-tab nemo-media-columns nemo-pastebin nemo-repairer nemo-emblems 
+  gsettings set org.cinnamon.desktop.default-applications.terminal exec xfce4-terminal
+
+# bootfähige Sticks
+# trizen -S etcher 
+
+# Systemoptimierung
+  # trizen -S stacer (geht aktell nicht)
+
+# Browser
+  # pacman -S firefox-i18n-de 
+  # pacman -S opera chromium 
+  # trizen -S chromium-widevine
+  # trizen -S vivaldi vivaldi-codecs-ffmpeg-extra-bin vivaldi-snapshot
+  
+# installation zippers / unzippers
+# pacman -S --noconfirm --needed unace unrar zip unzip sharutils uudeview arj cabextract file-roller xarchiver
+# trizen -S p7zip-gui
+
+# Hardware Information Prozessanzeiuge
+# pacman -S --noconfirm --needed hardinfo htop gparted gnome-disk-utility glances 
+
+# Vektorgrafik
+#  pacman -S inkscape ristretto gimp
+# trizen -S wps-office libreoffice-fresh libreoffice-fresh-de
+# ZSH
+# trizen -S --noconfirm --noedit zsh zsh-completions zsh-syntax-highlighting
+# wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O - | sh
+# sudo sed -i 's/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"random\"/g' ~/.zshrc
+# echo 'source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 
+# neofetch' >>  ~/.zshrc
+# sudo chsh thorsten -s /bin/zsh
+
+# exit
+# umount -R /mnt
+# reboot
+
+# ungenutze Packete entfernen
+  pacman -Rns $(pacman -Qtdq)
+
+# AUR Installation
+als User 
+# mkdir .AUR 	'Verzeichnis anlegen
+# cd .AUR	'ins Verzeichnis wechseln
+# git clone URL	'URL mit git am Ende
+# cd PROG	'ins entpackte Verzeichnis wechseln
+# makepkg -rsi	'Paket zur Installation wird erstell, Ínstallation bejahen
+
+
+Install virtualbox-guest-utils:
+sudo pacman -S virtualbox-guest-utils
+
+pacman -Rs linux
+
+# Virtualbox
+	# linux kernel 
+	pacman -S virtualbox-host-modules-arch
+	pacman -S --noconfirm --needed virtualbox
+	# for other kernels 
+	# pacman -S virtualbox-host-dkms
+
+	grub-mkconfig -o /boot/grub/grub.cfg
+
+	systemctl enable vboxservice
+
+	# modprobe vboxdrv
+	# add user to the vboxsf group & permission to access the media folder:
+	usermod -a -G vboxsf thorsten
+
+	# [ -d $HOME"/.VBoxShare" ] || mkdir -p $HOME"/.VBoxShare"
+	mkdir -p /home/thorsten/.VBoxShare
+	chown -R thorsten:users /home/thorsten/.VBoxShare
+
+# 5. Set up firewall
+
+Install ufw:
+sudo pacman -S ufw
+
+Enable it.
+sudo ufw enable 
+
+Check its status:
+sudo ufw status verbose
+
+Enable the start-up with the system:
+sudo systemctl enable ufw.service
+
+Reboot and check the status again. It should be active.
+
+pacman -S --noconfirm --needed git wget imagemagick catfish redshift gimp inkscape gksu gvfs gvfs-mtp alsa-tools alsa-utils alsa-plugins alsa-lib alsa-firmware pulseaudio-alsa pavucontrol gstreamer gst-plugins-good gst-plugins-bad gst-plugins-base gst-plugins-ugly gst-libav ffmpegthumbnailer volumeicon playerctl vlc audacity mp3splt-gtk baobab htop gparted gnome-disk-utility glances unace unrar zip unzip sharutils uudeview arj cabextract file-roller xarchiver lm_sensors lsb-release xdg-user-dirs 
