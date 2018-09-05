@@ -86,10 +86,11 @@ Server = https://arcolinux.github.io/arcolinux_repo_iso/$arch
 # SigLevel = Never
 # Server = http://repo.archlinux.fr/$arch' | sudo tee --append /etc/pacman.conf
 
-sudo pacman-key --init
-sudo pacman-key --populate archlinux arcolinux
-sudo pacman-key --keyserver hkps://hkps.pool.sks-keyservers.net:443 -r 74F5DE85A506BF64
-sudo pacman-key -f 74F5DE85A506BF64
+#sudo pacman-key --init
+#sudo pacman-key --populate archlinux arcolinux
+#sudo pacman-key --keyserver hkps://hkps.pool.sks-keyservers.net:443 -r 74F5DE85A506BF64
+#sudo pacman-key -f 74F5DE85A506BF64
+sudo pacman-key --keyserver hkp://pool.sks-keyservers.net:80 -r 74F5DE85A506BF64
 sudo pacman-key --lsign-key  74F5DE85A506BF64
 
 sudo pacman -Syu --noconfirm --needed trizen yaourt package-query
