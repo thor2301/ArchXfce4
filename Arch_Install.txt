@@ -1,3 +1,5 @@
+# https://github.com/erikdubois/ArchXfce4.git
+
 # deutsche Tastatur
   loadkeys de-latin1-nodeadkeys
 
