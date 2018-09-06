@@ -78,9 +78,13 @@ Include = /etc/pacman.d/mirrorlist
 SigLevel = Required DatabaseOptional
 Server = https://arcolinux.github.io/arcolinux_repo/$arch
 
-[arcolinux_repo_iso]
-SigLevel = Never
-Server = https://arcolinux.github.io/arcolinux_repo_iso/$arch
+[arcolinux_repo_3party]
+SigLevel = Required DatabaseOptional
+Server = https://arcolinux.github.io/arcolinux_repo_3party/$arch
+
+#[arcolinux_repo_iso]
+#SigLevel = Never
+#Server = https://arcolinux.github.io/arcolinux_repo_iso/$arch
 
 # [archlinuxfr]
 # SigLevel = Never
