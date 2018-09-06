@@ -98,8 +98,8 @@ sudo pacman -Syu --noconfirm --needed trizen yaourt package-query
 echo "################################################################"
 echo "######################         XORG       ######################"
 echo "################################################################"
-sudo pacman -S --noconfirm --needed xorg-server xorg-xinit xf86-input-synaptics xorg-xrandr
-sudo localectl set-x11-keymap de pc105 nodeadkeys
+sudo pacman -S --noconfirm --needed  xorg-server xorg-apps xorg-xinit xorg-twm xterm xf86-input-synaptics xorg-xrandr
+#sudo localectl set-x11-keymap de pc105 nodeadkeys
 
 echo "################################################################"
 echo "######################     BUMBLEBEE      ######################"
