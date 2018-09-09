@@ -81,9 +81,9 @@ Server = https://arcolinux.github.io/arcolinux_repo/$arch
 SigLevel = Required DatabaseOptional
 Server = https://arcolinux.github.io/arcolinux_repo_3party/$arch
 
-#[arcolinux_repo_iso]
-#SigLevel = Never
-#Server = https://arcolinux.github.io/arcolinux_repo_iso/$arch
+[arcolinux_repo_iso]
+SigLevel = Never
+Server = https://arcolinux.github.io/arcolinux_repo_iso/$arch
 
 # [archlinuxfr]
 # SigLevel = Never
@@ -128,7 +128,7 @@ sudo pacman -S --noconfirm --needed acpid dbus avahi cups cronie neofetch galcul
 sudo systemctl enable acpid.service cronie.service avahi-daemon dbus.service org.cups.cupsd.service
 
 # SYSTEMTOOLS
-sudo pacman -S --noconfirm --needed thunar tumbler thunar-archive-plugin thunar-volman catfish gvfs gvfs-mtp hardinfo gparted gnome-disk-utility glances unace unrar zip unzip sharutils uudeview arj cabextract file-roller xarchiver inkscape ristretto gimp archlinux-wallpaper transmission-cli transmission-gtk exfat-utils fsarchiver gnu-netcat gpm
+sudo pacman -S --noconfirm --needed thunar tumbler thunar-archive-plugin thunar-volman catfish gvfs gvfs-mtp hardinfo gparted gnome-disk-utility glances unace unrar zip unzip sharutils uudeview arj cabextract file-roller xarchiver inkscape ristretto gimp archlinux-wallpaper transmission-cli transmission-gtk exfat-utils fsarchiver gnu-netcat gpm mtpfs
 
 # SCHRIFTAREN
 sudo pacman -S --noconfirm --needed adobe-source-sans-pro-fonts cantarell-fonts noto-fonts terminus-font ttf-bitstream-vera ttf-dejavu ttf-droid ttf-inconsolata ttf-roboto ttf-ubuntu-font-family
@@ -139,7 +139,7 @@ trizen -S --noconfirm --needed gksu inxi menulibre mugshot grub-customizer subli
 # polkit polkit-gnome python2-dbus python2-xdg qt5ct qt5-styleplugins qt5-tools qt5-webkit
 
 # SYSTEMTREIBER
-trizen -S --noconfirm --needed wd719x-firmware aic94xx-firmware wps-office chromium-widevine p7zip-gui pamac gcolor2 pulseaudio-equalizer-ladspa
+trizen -S --noconfirm --needed wd719x-firmware aic94xx-firmware wps-office chromium-widevine p7zip-gui pamac gcolor2 pulseaudio-equalizer-ladspa jmtpfs
 
 # THEMES ICONS
 trizen -S --noconfirm --noedit archlinux-artwork arc-icon-theme oxygen-icons-svg moka-icon-theme faba-icon-theme arc-gtk-theme adwaita-icon-theme adwaita-xfce-theme-git numix-gtk-theme-git numix-icon-theme-pack-git sardi-icons gtk-arc-flatabulous-theme-git breeze-snow-cursor-theme xdg-user-dirs hardcode-fixer-git breeze breeze-blue-cursor-theme xfwm4-theme-breeze zephyr-gtk-theme-git xdg-desktop-portal-gtk 
