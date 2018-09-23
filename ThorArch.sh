@@ -96,7 +96,7 @@ Server = https://arcolinux.github.io/arcolinux_repo_iso/$arch
 sudo pacman-key --keyserver hkp://pool.sks-keyservers.net:80 -r 74F5DE85A506BF64
 sudo pacman-key --lsign-key  74F5DE85A506BF64
 
-sudo pacman -Syu --noconfirm --needed trizen yaourt package-query
+sudo pacman -Syu --noconfirm --needed trizen yaourt package-query yay
 
 echo "################################################################"
 echo "######################         XORG       ######################"
@@ -135,8 +135,7 @@ sudo pacman -S --noconfirm --needed adobe-source-sans-pro-fonts cantarell-fonts 
 sudo pacman -Syyu 
 
 # SYSTEMTOOLS AUR  BROWSER AUR OFFICE PROGRAMME
-trizen -S --noconfirm --needed gksu inxi menulibre mugshot grub-customizer sublime-text-dev vivaldi vivaldi-codecs-ffmpeg-extra-bin ttf-ms-fonts yad libreoffice-fresh libreoffice-fresh-de 
-# polkit polkit-gnome python2-dbus python2-xdg qt5ct qt5-styleplugins qt5-tools qt5-webkit
+trizen -S --noconfirm --needed gksu inxi menulibre mugshot grub-customizer sublime-text-dev vivaldi vivaldi-codecs-ffmpeg-extra-bin ttf-ms-fonts yad libreoffice-fresh libreoffice-fresh-de polkit polkit-gnome python2-dbus python2-xdg qt5ct qt5-styleplugins qt5-tools qt5-webkit
 
 # SYSTEMTREIBER
 trizen -S --noconfirm --needed wd719x-firmware aic94xx-firmware wps-office chromium-widevine p7zip-gui pamac gcolor2 pulseaudio-equalizer-ladspa jmtpfs
@@ -154,7 +153,7 @@ echo "################################################################"
  xdg-user-dirs-update
  xdg-user-dirs-update --force
 
-#[ -d $HOME"/.icons" ] || mkdir -p $HOME"/.aur"
+#[ -d $HOME"/.aur" ] || mkdir -p $HOME"/.aur"
 [ -d $HOME"/.icons" ] || mkdir -p $HOME"/.icons"
 [ -d $HOME"/.themes" ] || mkdir -p $HOME"/.themes"
 [ -d $HOME"/.fonts" ] || mkdir -p $HOME"/.fonts"
