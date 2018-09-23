@@ -174,3 +174,7 @@ echo 'source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlight
 neofetch' | sudo tee --append  ~/.zshrc
 
 sudo chsh thorsten -s /bin/zsh
+
+
+# gpg --receive-keys 42C9C8D3AF5EA5E3
+# trizen -S --noconfirm --noedit compton compton -conf
