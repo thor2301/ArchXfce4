@@ -63,7 +63,7 @@ ff02::2         ip6-allrouters' | sudo tee - /etc/hosts
 echo "################################################################"
 echo "######################     AUDIO VIDEO    ######################"
 echo "################################################################"
-sudo pacman -S --noconfirm --needed alsa-tools alsa-utils alsa-plugins alsa-lib alsa-firmware pulseaudio-alsa pavucontrol gstreamer gst-plugins-good gst-plugins-bad gst-plugins-base gst-plugins-ugly gst-libav ffmpegthumbnailer playerctl vlc audacity mp3splt-gtk
+sudo pacman -S --noconfirm --needed alsa-tools alsa-utils alsa-plugins alsa-lib alsa-firmware pulseaudio-alsa pavucontrol gstreamer gst-plugins-good gst-plugins-bad gst-plugins-base gst-plugins-ugly gst-libav ffmpegthumbnailer playerctl vlc audacity # mp3splt-gtk
 
 echo "################################################################"
 echo "######################     REPOSITORIEN   ######################"
@@ -119,6 +119,7 @@ sudo pacman -S --noconfirm --needed xfce4 xfce4-goodies lightdm lightdm-gtk-gree
 sudo systemctl enable lightdm.service
 sudo systemctl set-default graphical.target
 sudo pacman -R xfce4-artwork mousepad orage xfce4-eyes-plugin --noconfirm
+yay -S --noconfirm xfce4-panel-profiles
 
 echo "################################################################"
 echo "######################    SOFTWARE ARCH   ######################"
@@ -141,7 +142,7 @@ trizen -S --noconfirm --needed gksu inxi menulibre mugshot grub-customizer subli
 trizen -S --noconfirm --needed wd719x-firmware aic94xx-firmware wps-office chromium-widevine p7zip-gui pamac gcolor2 pulseaudio-equalizer-ladspa jmtpfs
 
 # THEMES ICONS
-trizen -S --noconfirm --noedit archlinux-artwork arc-icon-theme oxygen-icons-svg moka-icon-theme faba-icon-theme arc-gtk-theme adwaita-icon-theme adwaita-xfce-theme-git numix-gtk-theme-git numix-icon-theme-pack-git sardi-icons gtk-arc-flatabulous-theme-git breeze-snow-cursor-theme xdg-user-dirs hardcode-fixer-git breeze breeze-blue-cursor-theme xfwm4-theme-breeze zephyr-gtk-theme-git xdg-desktop-portal-gtk 
+trizen -S --noconfirm --noedit archlinux-artwork arc-icon-theme oxygen-icons-svg moka-icon-theme faba-icon-theme arc-gtk-theme adwaita-icon-theme adwaita-xfce-theme-git numix-gtk-theme-git numix-icon-theme-pack-git sardi-icons gtk-arc-flatabulous-theme-git breeze-snow-cursor-theme xdg-user-dirs hardcode-fixer-git breeze breeze-blue-cursor-theme xfwm4-theme-breeze zephyr-gtk-theme-git xdg-desktop-portal-gtk mint-y-icons
 
 # HEADERS DKMS
 sudo pacman -S --noconfirm --needed linux-headers dkms
