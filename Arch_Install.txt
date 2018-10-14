@@ -73,6 +73,11 @@
   mkinitcpio -p linux
   grub-mkconfig -o /boot/grub/grub.cfg
 
+# Kernel anzeigen mit uname -r
+nano /etc/lvm/lvm.conf # use_lvmetad=1 ändern use_lvmetad=0
+# update-initramfs -k *KERNEL_VERSION* -u ; sync
+update-initramfs -k 4.17.11-arch1 -u ; sync
+
 # locale Einstellungen 
   rm -rf /etc/localtime &&
   ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
