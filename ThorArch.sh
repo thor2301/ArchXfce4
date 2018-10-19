@@ -102,7 +102,9 @@ echo "################################################################"
 echo "######################         XORG       ######################"
 echo "################################################################"
 sudo pacman -S --noconfirm --needed  xorg-server xorg-apps xorg-xinit xorg-twm xterm xf86-input-synaptics xorg-xrandr
-#sudo localectl set-x11-keymap de pc105 nodeadkeys
+sudo localectl set-x11-keymap de pc105 nodeadkeys
+sudo setxkbmap -model pc105 -layout de
+
 
 echo "################################################################"
 echo "######################     BUMBLEBEE      ######################"
