@@ -148,7 +148,7 @@ trizen -S --noconfirm --noedit archlinux-artwork arc-icon-theme oxygen-icons-svg
 trizen -S --noconfirm --noedit adwaita-icon-theme adwaita-xfce-theme-git numix-gtk-theme-git numix-icon-theme-pack-git sardi-icons xdg-user-dirs hardcode-fixer-git zephyr-gtk-theme-git xdg-desktop-portal-gtk mint-y-icons
 yaourt -S --noconfirm xfwm4-theme-breeze 
 # yaourt -S --noconfirm breeze-snow-cursor-theme breeze-blue-cursor-theme 
-# yay -S --noconfirm gtk-arc-flatabulous-theme-git
+
 
 # HEADERS DKMS
 sudo pacman -S --noconfirm --needed linux-headers dkms
