@@ -144,7 +144,7 @@ trizen -S --noconfirm --needed gksu inxi menulibre mugshot grub-customizer subli
 trizen -S --noconfirm --needed wd719x-firmware aic94xx-firmware wps-office chromium-widevine p7zip-gui pamac gcolor2 pulseaudio-equalizer-ladspa jmtpfs
 
 # THEMES ICONS
-trizen -S --noconfirm --noedit archlinux-artwork arc-icon-theme oxygen-icons-svg moka-icon-theme faba-icon-theme arc-gtk-theme adwaita-icon-theme adwaita-xfce-theme-git numix-gtk-theme-git numix-icon-theme-pack-git sardi-icons gtk-arc-flatabulous-theme-git breeze-snow-cursor-theme xdg-user-dirs hardcode-fixer-git breeze breeze-blue-cursor-theme xfwm4-theme-breeze zephyr-gtk-theme-git xdg-desktop-portal-gtk mint-y-icons
+yay -S --noconfirm archlinux-artwork arc-icon-theme oxygen-icons-svg moka-icon-theme faba-icon-theme arc-gtk-theme adwaita-icon-theme adwaita-xfce-theme-git numix-gtk-theme-git numix-icon-theme-pack-git sardi-icons gtk-arc-flatabulous-theme-git breeze-snow-cursor-theme xdg-user-dirs hardcode-fixer-git breeze breeze-blue-cursor-theme xfwm4-theme-breeze zephyr-gtk-theme-git xdg-desktop-portal-gtk mint-y-icons
 
 # HEADERS DKMS
 sudo pacman -S --noconfirm --needed linux-headers dkms
